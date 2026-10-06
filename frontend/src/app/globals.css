@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ts-bg: #0B0F0E;
+  --color-ts-surface: #111714;
+  --color-ts-panel: #151C18;
+  --color-ts-panel-hover: #19221D;
+  --color-ts-border: #263129;
+  --color-ts-border-subtle: #1A231D;
+  --color-ts-border-highlight: #354338;
+  --color-ts-lime: #C6F135;
+  --color-ts-lime-muted: rgba(198, 241, 53, 0.12);
+  --color-ts-lime-border: rgba(198, 241, 53, 0.35);
+  --color-ts-orange: #FF8A3D;
+  --color-ts-orange-muted: rgba(255, 138, 61, 0.12);
+  --color-ts-orange-border: rgba(255, 138, 61, 0.35);
+  --color-ts-text: #E8EDE7;
+  --color-ts-muted: #7D887F;
+  --color-ts-dim: #455047;
+  --font-sans: var(--font-geist-sans), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: var(--font-geist-mono), "JetBrains Mono", Consolas, Menlo, monospace;
+}
+
+:root {
+  --background: #0B0F0E;
+  --foreground: #E8EDE7;
+  color-scheme: dark;
+}
+
+body {
+  background-color: #0B0F0E;
+  color: #E8EDE7;
+  font-family: var(--font-sans);
+  min-height: 100dvh;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Subtle workstation grid overlay for technical depth */
+.workstation-grid {
+  background-image: 
+    linear-gradient(to right, rgba(38, 49, 41, 0.3) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(38, 49, 41, 0.3) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* Custom technical scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0B0F0E;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #263129;
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #354338;
+}
+
+/* Selection */
+::selection {
+  background: #C6F135;
+  color: #0B0F0E;
+}
