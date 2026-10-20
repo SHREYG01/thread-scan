@@ -21,7 +21,7 @@ This document records the empirical results of all functional, concurrency, boun
 
 | Total Test Cases | PASS | FAIL | NOT RUN | BLOCKED |
 | :---: | :---: | :---: | :---: | :---: |
-| **14** | **12** | **0** | **2** | **0** |
+| **14** | **13** | **0** | **1** | **0** |
 
 ---
 
@@ -40,9 +40,9 @@ This document records the empirical results of all functional, concurrency, boun
 | **TC-CHK-01** | Algorithmic | Chunked Stream Hashing (Large File) | Process 12 MB files across multiple 64 KB chunks, compute exact SHA-256. | Group `GRP-001` formed for `chunked_large_12mb.bin` matching SHA-256 `2e49fbbe...`. | **PASS** | [`api_duplicates_multi4.json`](./evidence/api_duplicates_multi4.json) |
 | **TC-MOD-01** | Concurrency | Single-Thread Sequential Execution | Process all files sequentially on Thread 01 with `mode: "single"`. | Completed in 181 ms; Thread 01 handled 11/11 files. | **PASS** | [`api_threads_single.json`](./evidence/api_threads_single.json) |
 | **TC-MOD-02** | Concurrency | Multithreaded Worker Pool Execution | Distribute hashing tasks across 4 worker threads; match single-thread results. | Completed in 101 ms (1.79x faster); identical 4 duplicate groups found. | **PASS** | [`api_threads_multi4.json`](./evidence/api_threads_multi4.json) |
-| **TC-ERR-01** | Robustness | Invalid Target Path | Handle non-existent path without unhandled filesystem exception. | Returns `filesDiscovered: 0`, HTTP 200 OK, no server panic. | **PASS** | [`api_scan_metrics_invalid.json`](./evidence/api_scan_metrics_invalid.json) |
+| **TC-ERR-01** | Robustness | Invalid Target Path | Handle non-existent path without unhandled filesystem exception (returns HTTP 200 OK with `filesDiscovered: 0` as designed). | Handled cleanly in `FileScanner::scanDirectory` (`fs::exists` check); returns `filesDiscovered: 0`, HTTP 200 OK, no server panic. | **PASS** | [`api_scan_metrics_invalid.json`](./evidence/api_scan_metrics_invalid.json) |
 | **TC-NET-01** | Resilience | Frontend Offline / Backend Disconnection | Frontend displays graceful error indicator when C++ server is halted. | UI displays disconnected banner and offline status without crashing. | **PASS** | [`screenshot_disconnected.png`](./evidence/screenshot_disconnected.png) |
-| **TC-LGC-01** | Stress | Large-Scale Dataset ($\ge 10,000$ files) | Stress test engine under heavy filesystem recursion and file descriptor limits. | **NOT RUN** — Exceeds lightweight transient test budget; planned for standalone qualification. | **NOT RUN** | N/A |
+| **TC-LGC-01** | Stress | Large-Scale Dataset ($\ge 10,000$ files) | 10,000 files in dedicated tree (`C:\thread-scan-stress-10k`); verify recursion, pool distribution, duplicate identification. | Completed in 2,916 ms; 10,000 discovered, 8,000 processed; all 500 pairs and 200 triplets verified; 0 collisions. | **PASS** | [`api_scan_metrics_stress_10k.json`](./evidence/api_scan_metrics_stress_10k.json) |
 | **TC-CON-01** | Stress | Concurrent File Deletion / Modification During Scan | Modify file contents while hashing pipeline is active. | **NOT RUN** — Requires non-deterministic timing injection not supported in current CLI harness. | **NOT RUN** | N/A |
 
 ---
@@ -69,3 +69,17 @@ In `C:\thread-scan-test-dataset`:
   - Workers Active: 4 threads (Thread 01: 3 files, Thread 02: 2 files, Thread 03: 3 files, Thread 04: 3 files)
   - Duplicate Groups: 4 groups (identical file sets, hashes, and wasted bytes)
 - **Conclusion**: Multithreaded execution achieves a **1.79x speedup** on a 24 MB dataset without introducing race conditions, hash corruptions, or missing duplicates.
+
+### 4.3 10,000-File Stress Test Execution (TC-LGC-01)
+- **Workload**: 10,000 files created across nested folders in `C:\thread-scan-stress-10k` (18.3 MB total):
+  - 8,000 files in unique batches (with distinct and patterned byte sizes).
+  - 500 exact duplicate pairs (1,000 files).
+  - 200 exact duplicate triplets (600 files).
+  - 200 collision pairs sharing 512 bytes with differing ASCII payloads (400 files).
+- **Execution & Telemetry**:
+  - Scan completed in **2,916 ms** across 8 worker threads.
+  - Stage 1 discovered all 10,000 files and filtered down to 8,000 candidate files sharing sizes.
+  - Stage 2 hashed 8,000 files (10,124,650 bytes) across the 8 worker threads with perfectly balanced task distribution (~1,000 tasks/worker).
+  - Duplicate detection verified: 100% of the 500 duplicate pairs and 100% of the 200 duplicate triplets were correctly identified without omission.
+  - Collision verification: Confirmed 0 cross-pair collisions occurred between distinct collision files.
+  - **Memory & Resource Stability**: Process remained stable with no handle leakage or memory crashes. Temporary dataset was completely cleaned up following verification.

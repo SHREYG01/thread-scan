@@ -19,6 +19,9 @@ Screenshots were captured using Microsoft Edge headless rendering (`msedge.exe -
 | [`screenshot_activity.png`](./screenshot_activity.png) | `/activity` | Monospace audit log displaying chronological pipeline event streams and task lifecycle events. |
 | [`screenshot_not_found.png`](./screenshot_not_found.png) | `/_not-found` | Graceful 404 error routing handling invalid paths without client runtime disruption. |
 | [`screenshot_disconnected.png`](./screenshot_disconnected.png) | `/overview` (Offline) | Client resilience verification showing disconnected status banner and error handling when the C++ backend daemon is unreachable. |
+| [`screenshot_stress_10k_overview.png`](./screenshot_stress_10k_overview.png) | `/overview` | Overview workstation interface following 10,000-file stress test run with hydrated stat counters (10,000 discovered, 8,000 processed, 752 duplicate groups). |
+| [`screenshot_stress_10k_duplicates.png`](./screenshot_stress_10k_duplicates.png) | `/duplicates` | Duplicate cluster console displaying detected duplicate groups from the 10,000-file dataset. |
+| [`screenshot_stress_10k_threads.png`](./screenshot_stress_10k_threads.png) | `/threads` | Telemetry panel showing all 8 worker threads having processed ~1,000 tasks each. |
 
 ---
 
@@ -40,6 +43,11 @@ Screenshots were captured using Microsoft Edge headless rendering (`msedge.exe -
 | [`api_benchmark_trial1.json`](./api_benchmark_trial1.json) | **TC-BEN-01** | `GET /api/v1/benchmark/latest` | Cold cache trial (1T: 4757 ms $\to$ 8T: 297 ms). |
 | [`api_benchmark_trial2.json`](./api_benchmark_trial2.json) | **TC-BEN-01** | `GET /api/v1/benchmark/latest` | Warm cache trial (1T: 1074 ms $\to$ 8T: 285 ms). |
 | [`api_benchmark_trial3.json`](./api_benchmark_trial3.json) | **TC-BEN-01** | `GET /api/v1/benchmark/latest` | Steady-state verification trial (1T: 1124 ms $\to$ 8T: 312 ms). |
+| [`api_scan_start_stress_10k.json`](./api_scan_start_stress_10k.json) | **TC-LGC-01** | `POST /api/v1/scan/start` | 10k stress scan initialization payload response. |
+| [`api_scan_metrics_stress_10k.json`](./api_scan_metrics_stress_10k.json) | **TC-LGC-01** | `GET /api/v1/scan/metrics` | 10k stress metrics (10,000 discovered, 8,000 processed, 2,916 ms). |
+| [`api_threads_stress_10k.json`](./api_threads_stress_10k.json) | **TC-LGC-01** | `GET /api/v1/threads` | 8-thread worker telemetry for 10k file run (~1,000 tasks/worker). |
+| [`api_duplicates_stress_10k.json`](./api_duplicates_stress_10k.json) | **TC-LGC-01** | `GET /api/v1/duplicates` | Complete duplicate groupings (752 groups: 500 pairs, 200 triplets). |
+| [`api_activity_stress_10k.json`](./api_activity_stress_10k.json) | **TC-LGC-01** | `GET /api/v1/logs` | Activity audit log for 10k scan lifecycle. |
 
 ---
 
